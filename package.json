@@ -1,6 +1,6 @@
 {
   "name": "@awesome-it/axios-offline",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Store query and repeat",
   "repository": "github.com:awesome-it/axios-offline.git",
   "homepage": "https://github.com/awesome-it/axios-offline",
@@ -58,7 +58,5 @@
       "env"
     ]
   },
-  "dependencies": {
-    "@appello/common": "^1.0.22"
-  }
+  "dependencies": {}
 }

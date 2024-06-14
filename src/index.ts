@@ -1,4 +1,3 @@
-import { pick } from '@appello/common/lib/utils/object';
 import {
   AxiosAdapter,
   AxiosError,
@@ -47,7 +46,7 @@ export class AxiosOffline {
   constructor({
     axiosInstance,
     storageInstance,
-    getRequestToStore = config => pick(config, ['method', 'url', 'headers', 'data']),
+    getRequestToStore = ({ method, url, headers, data}) => ({ method, url, headers, data}),
     getResponsePlaceholder,
     sendFromStorageFirst,
   }: AxiosOfflineOptions) {
