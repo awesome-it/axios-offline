@@ -26,22 +26,19 @@ yarn add @awesome-it/axios-offline
 ## Usage example
 
 ```typescript
-import axios, { AxiosAdapter } from 'axios';
 import { AxiosOffline } from '@awesome-it/axios-offline';
-import NetInfo from '@react-native-community/netinfo';
+import axios, { AxiosAdapter, HttpStatusCode } from 'axios';
 import LocalForage from 'localforage';
 
 const offlineUrls = ['/list', '/profile'];
 
 export const axiosOfflineInstance = new AxiosOffline({
-  defaultAdapter: axios.defaults.adapter as AxiosAdapter, // require, basic adapter
-  storageOptions: {
-    name: 'axios-offline', // optional, default: "axios-stack"
-    driver: LocalForage.LOCALSTORAGE, // optional, default: LocalForage.LOCALSTORAGE
-  },
-  shouldStoreRequest: config => {
-    return config.method === 'POST' && offlineUrls.includes(config.url as string);
-  },
+  axiosInstance: axios,
+  storageInstance: LocalForage.createInstance({
+    name: 'axios-offline',
+    driver: LocalForage.LOCALSTORAGE,
+  }),
+  getRequestToStore: (request) => (request.method === 'put' || request.method === 'post' ? request : undefined),
   getResponsePlaceholder: config => ({
     config,
     headers: {},
