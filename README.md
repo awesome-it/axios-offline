@@ -38,7 +38,9 @@ export const axiosOfflineInstance = new AxiosOffline({
     name: 'axios-offline',
     driver: LocalForage.LOCALSTORAGE,
   }),
-  getRequestToStore: (request) => (request.method === 'put' || request.method === 'post' ? request : undefined),
+  // Note that some request props as transformRequest and transformResponse are not supported since they can't get hydrated.
+  getRequestToStore: ({ baseURL, method, url, headers, data }) =>
+    method && ['post', 'put', 'patch', 'delete'].includes(method) ? { baseURL, method, url, headers, data } : undefined,
   getResponsePlaceholder: config => ({
     config,
     headers: {},
@@ -53,6 +55,10 @@ export const Api = axios.create({
 });
 
 window.addEventListener('online', (event) => {
-  axiosOfflineInstance.sendRequestsFromStore();
+  try {
+    axiosOfflineInstance.sendRequestsFromStore();
+  } catch (error) {
+    console.error('Failed to send requests from store', error);
+  }
 });
 ```

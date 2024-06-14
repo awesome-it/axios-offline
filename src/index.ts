@@ -1,3 +1,4 @@
+import { v4 as uuid } from 'uuid';
 import {
   AxiosAdapter,
   AxiosError,
@@ -5,22 +6,22 @@ import {
   AxiosPromise,
   AxiosRequestConfig,
   AxiosResponse,
+  getAdapter,
   InternalAxiosRequestConfig,
 } from 'axios';
-
 import { NonFunctionProperties } from './types';
 
 type StorableAxiosRequestConfig = NonFunctionProperties<AxiosRequestConfig>;
 
-export interface StorageInstance {
+export type StorageInstance = {
   prefix?: string;
   getItem(key: string): Promise<string | null>;
   setItem(key: string, value: string): Promise<any>;
   removeItem(key: string): Promise<any>;
   keys(): Promise<readonly string[]>;
-}
+};
 
-export interface AxiosOfflineOptions {
+export type AxiosOfflineOptions = {
   axiosInstance: AxiosInstance;
   storageInstance: StorageInstance;
   getRequestToStore?: (
@@ -28,11 +29,13 @@ export interface AxiosOfflineOptions {
   ) => StorableAxiosRequestConfig | undefined;
   getResponsePlaceholder?: (request: InternalAxiosRequestConfig, err: AxiosError) => AxiosResponse;
   sendFromStorageFirst?: boolean;
-}
+};
 
-interface AxiosOfflineAdapter extends AxiosAdapter {
-  (config: InternalAxiosRequestConfig, fromStorage: boolean): AxiosPromise;
-}
+type AxiosOfflineAdapter = ((
+  config: InternalAxiosRequestConfig,
+  fromStorage: boolean,
+) => AxiosPromise) &
+  AxiosAdapter;
 
 export class AxiosOffline {
   private readonly axiosInstance: AxiosInstance;
@@ -44,12 +47,17 @@ export class AxiosOffline {
   private readonly options: Required<Pick<AxiosOfflineOptions, 'getRequestToStore'>> &
     Pick<AxiosOfflineOptions, 'getResponsePlaceholder' | 'sendFromStorageFirst'>;
 
-  private sendingPromise: Promise<void> | null = null;
-
   constructor({
     axiosInstance,
     storageInstance,
-    getRequestToStore = ({ method, url, headers, data }) => ({ method, url, headers, data }),
+    // Note that some request props as transformRequest and transformResponse are not supported since they can't get hydrated.
+    getRequestToStore = ({ baseURL, method, url, headers, data }) => ({
+      baseURL,
+      method,
+      url,
+      headers,
+      data,
+    }),
     getResponsePlaceholder,
     sendFromStorageFirst,
   }: AxiosOfflineOptions) {
@@ -63,14 +71,14 @@ export class AxiosOffline {
       sendFromStorageFirst,
     };
 
-    this.defaultAdapter = axiosInstance.defaults.adapter as AxiosAdapter;
+    this.defaultAdapter = getAdapter(axiosInstance.defaults.adapter);
     this.axiosInstance = axiosInstance;
     this.axiosInstance.defaults.adapter = this.adapter;
   }
 
   private async storeRequest(request: StorableAxiosRequestConfig) {
     await this.storageInstance.setItem(
-      `${this.storageInstance.prefix}_${Date.now()}`,
+      `${this.storageInstance.prefix}_${uuid()}`,
       JSON.stringify(request),
     );
   }
@@ -79,25 +87,24 @@ export class AxiosOffline {
     return this.storageInstance.removeItem(key);
   }
 
-  private adapter: AxiosOfflineAdapter = async config => {
-    const fromStorage = config.headers?.[AxiosOffline.STORAGE_HEADER] || false;
+  private adapter: AxiosOfflineAdapter = async request => {
+    const fromStorage = request.headers[AxiosOffline.STORAGE_HEADER] || false;
 
     try {
       if (this.options.sendFromStorageFirst && !fromStorage) {
         await this.sendRequestsFromStore();
       }
-      return await this.defaultAdapter(config);
+
+      return await this.defaultAdapter(request);
     } catch (err) {
       const isOffline = AxiosOffline.checkIfOfflineError(err as AxiosError);
+      const requestToStore = this.options.getRequestToStore(request);
 
-      if (fromStorage || !isOffline) throw err;
-
-      const requestToStore = this.options.getRequestToStore(config);
-      if (requestToStore) {
+      if (!fromStorage && isOffline && requestToStore) {
         await this.storeRequest(requestToStore);
 
         if (this.options.getResponsePlaceholder) {
-          return this.options.getResponsePlaceholder(config, err as AxiosError);
+          return this.options.getResponsePlaceholder(request, err as AxiosError);
         }
       }
 
@@ -106,43 +113,33 @@ export class AxiosOffline {
   };
 
   async sendRequestsFromStore() {
-    try {
-      if (this.sendingPromise) {
-        await this.sendingPromise;
-      }
+    const keys = (await this.storageInstance.keys())
+      .filter(key => key.startsWith(this.storageInstance.prefix))
+      .sort();
 
-      const keys = (await this.storageInstance.keys())
-        .filter(key => key.startsWith(this.storageInstance.prefix))
-        .sort();
-      // eslint-disable-next-line no-restricted-syntax
-      for (const key of keys) {
-        try {
-          const request: AxiosRequestConfig | null = JSON.parse(
-            // eslint-disable-next-line no-await-in-loop
-            (await this.storageInstance.getItem(key)) as string,
-          );
-          if (request) {
-            // eslint-disable-next-line no-await-in-loop
-            await this.axiosInstance.request({
-              ...request,
-              headers: {
-                ...request.headers,
-                [AxiosOffline.STORAGE_HEADER]: true,
-              },
-            });
-          }
-        } catch (err) {
-          if (AxiosOffline.checkIfOfflineError(err as AxiosError)) {
-            break;
-          }
+    const requests: Record<string, AxiosRequestConfig> = {};
+    await Promise.all(
+      keys.map(async key => {
+        const request = await this.storageInstance.getItem(key);
+        if (request) {
+          requests[key] = JSON.parse(request) as AxiosRequestConfig;
         }
+      }),
+    );
 
-        // eslint-disable-next-line no-await-in-loop
+    await Promise.all(
+      Object.entries(requests).map(async ([key, request]) => {
+        await this.axiosInstance.request({
+          ...request,
+          headers: {
+            ...request.headers,
+            [AxiosOffline.STORAGE_HEADER]: true,
+          },
+        });
+
         await this.removeRequest(key);
-      }
-    } finally {
-      this.sendingPromise = null;
-    }
+      }),
+    );
   }
 
   static checkIfOfflineError(error: AxiosError): boolean {
