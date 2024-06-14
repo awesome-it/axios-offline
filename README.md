@@ -1,33 +1,33 @@
-# @appello/axios-offline
+# @awesome-it/axios-offline
 
-[![npm package](https://badgen.net/npm/v/@appello/axios-offline)](https://www.npmjs.com/package/@appello/axios-offline)
-[![License: MIT](https://badgen.net/npm/license/@appello/axios-offline)](https://opensource.org/licenses/MIT)
+[![npm package](https://badgen.net/npm/v/@awesome-it/axios-offline)](https://www.npmjs.com/package/@awesome-it/axios-offline)
+[![License: MIT](https://badgen.net/npm/license/@awesome-it/axios-offline)](https://opensource.org/licenses/MIT)
 
-[//]: # ([![npm downloads]&#40;https://badgen.net/npm/dw/@appello/axios-offline&#41;]&#40;https://www.npmjs.com/package/@appello/axios-offline&#41;)
+[//]: # ([![npm downloads]&#40;https://badgen.net/npm/dw/@awesome-it/axios-offline&#41;]&#40;https://www.npmjs.com/package/@awesome-it/axios-offline&#41;)
 
 Remembering failed requests and repeating when an internet connection is available
 
 ## Credentials  
-This package is based on a work of [jonkofee](https://github.com/jonkofee).
+This package is based on a work of [appello](https://github.com/appello-software/axios-offline) and [jonkofee](https://github.com/jonkofee).
 
 ## Installation
 ### Using npm
 ```bash
 npm install axios localforage # install peer dependencies
-npm install @appello/axios-offline
+npm install @awesome-it/axios-offline
 ```
 
 ### Using yarn
 ```bash
 yarn add axios localforage # install peer dependencies
-yarn add @appello/axios-offline
+yarn add @awesome-it/axios-offline
 ```
 
 ## Usage example
 
 ```typescript
 import axios, { AxiosAdapter } from 'axios';
-import { AxiosOffline } from '@appello/axios-offline';
+import { AxiosOffline } from '@awesome-it/axios-offline';
 import NetInfo from '@react-native-community/netinfo';
 import LocalForage from 'localforage';
 

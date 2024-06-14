@@ -5,7 +5,7 @@ import {
   AxiosInstance,
   AxiosPromise,
   AxiosRequestConfig,
-  AxiosResponse,
+  AxiosResponse, InternalAxiosRequestConfig,
 } from 'axios';
 
 import { NonFunctionProperties } from './types';
@@ -29,7 +29,7 @@ export interface AxiosOfflineOptions {
 }
 
 interface AxiosOfflineAdapter extends AxiosAdapter {
-  (config: AxiosRequestConfig, fromStorage: boolean): AxiosPromise;
+  (config: InternalAxiosRequestConfig, fromStorage: boolean): AxiosPromise;
 }
 
 export class AxiosOffline {
@@ -105,40 +105,40 @@ export class AxiosOffline {
 
   async sendRequestsFromStore() {
     try {
-      this.sendingPromise =
-        this.sendingPromise ??
-        (async () => {
-          const keys = (await this.storageInstance.keys())
-            .filter(key => key.startsWith(this.storageInstance.prefix))
-            .sort();
-          // eslint-disable-next-line no-restricted-syntax
-          for (const key of keys) {
-            try {
-              const request: AxiosRequestConfig | null = JSON.parse(
-                // eslint-disable-next-line no-await-in-loop
-                (await this.storageInstance.getItem(key)) as string,
-              );
-              if (request) {
-                // eslint-disable-next-line no-await-in-loop
-                await this.axiosInstance.request({
-                  ...request,
-                  headers: {
-                    ...request.headers,
-                    [AxiosOffline.STORAGE_HEADER]: true,
-                  },
-                });
-              }
-            } catch (err) {
-              if (AxiosOffline.checkIfOfflineError(err as AxiosError)) {
-                break;
-              }
-            }
+      if(this.sendingPromise) {
+        await this.sendingPromise;
+      }
 
+      const keys = (await this.storageInstance.keys())
+        .filter(key => key.startsWith(this.storageInstance.prefix))
+        .sort();
+      // eslint-disable-next-line no-restricted-syntax
+      for (const key of keys) {
+        try {
+          const request: AxiosRequestConfig | null = JSON.parse(
             // eslint-disable-next-line no-await-in-loop
-            await this.removeRequest(key);
+            (await this.storageInstance.getItem(key)) as string,
+          );
+          if (request) {
+            // eslint-disable-next-line no-await-in-loop
+            await this.axiosInstance.request({
+              ...request,
+              headers: {
+                ...request.headers,
+                [AxiosOffline.STORAGE_HEADER]: true,
+              },
+            });
           }
-        })();
-      await this.sendingPromise;
+        } catch (err) {
+          if (AxiosOffline.checkIfOfflineError(err as AxiosError)) {
+            break;
+          }
+        }
+
+        // eslint-disable-next-line no-await-in-loop
+        await this.removeRequest(key);
+      }
+
     } finally {
       this.sendingPromise = null;
     }

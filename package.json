@@ -1,9 +1,9 @@
 {
-  "name": "@appello/axios-offline",
-  "version": "1.0.12",
+  "name": "@awesome-it/axios-offline",
+  "version": "1.1.0",
   "description": "Store query and repeat",
-  "repository": "github.com:Appello-Pty-Ltd/axios-offline.git",
-  "homepage": "https://github.com/Appello-Pty-Ltd/axios-offline",
+  "repository": "github.com:awesome-it/axios-offline.git",
+  "homepage": "https://github.com/awesome-it/axios-offline",
   "keywords": [
     "axios",
     "offline",
@@ -25,7 +25,7 @@
     "tsconfig.json"
   ],
   "peerDependencies": {
-    "axios": "1.1.3"
+    "axios": "1.7.2"
   },
   "devDependencies": {
     "@babel/core": "^7.20.12",
@@ -35,7 +35,7 @@
     "@rollup/plugin-json": "^6.0.0",
     "@rollup/plugin-node-resolve": "^15.0.1",
     "@rollup/plugin-terser": "^0.4.0",
-    "axios": "1.1.3",
+    "axios": "1.7.2",
     "babel-preset-env": "^1.7.0",
     "prettier": "^2.8.3",
     "rollup": "^3.12.1",
