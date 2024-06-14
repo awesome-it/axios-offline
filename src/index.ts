@@ -4,7 +4,8 @@ import {
   AxiosInstance,
   AxiosPromise,
   AxiosRequestConfig,
-  AxiosResponse, InternalAxiosRequestConfig,
+  AxiosResponse,
+  InternalAxiosRequestConfig,
 } from 'axios';
 
 import { NonFunctionProperties } from './types';
@@ -46,7 +47,7 @@ export class AxiosOffline {
   constructor({
     axiosInstance,
     storageInstance,
-    getRequestToStore = ({ method, url, headers, data}) => ({ method, url, headers, data}),
+    getRequestToStore = ({ method, url, headers, data }) => ({ method, url, headers, data }),
     getResponsePlaceholder,
     sendFromStorageFirst,
   }: AxiosOfflineOptions) {
@@ -104,7 +105,7 @@ export class AxiosOffline {
 
   async sendRequestsFromStore() {
     try {
-      if(this.sendingPromise) {
+      if (this.sendingPromise) {
         await this.sendingPromise;
       }
 
@@ -137,7 +138,6 @@ export class AxiosOffline {
         // eslint-disable-next-line no-await-in-loop
         await this.removeRequest(key);
       }
-
     } finally {
       this.sendingPromise = null;
     }
