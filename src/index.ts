@@ -23,8 +23,8 @@ export interface StorageInstance {
 export interface AxiosOfflineOptions {
   axiosInstance: AxiosInstance;
   storageInstance: StorageInstance;
-  getRequestToStore?: (request: AxiosRequestConfig) => StorableAxiosRequestConfig | undefined;
-  getResponsePlaceholder?: (request: AxiosRequestConfig, err: AxiosError) => AxiosResponse;
+  getRequestToStore?: (request: InternalAxiosRequestConfig) => StorableAxiosRequestConfig | undefined;
+  getResponsePlaceholder?: (request: InternalAxiosRequestConfig, err: AxiosError) => AxiosResponse;
   sendFromStorageFirst?: boolean;
 }
 
