@@ -25,13 +25,19 @@ export type StorageInstance = {
 export type AxiosOfflineOptions = {
   axiosInstance: AxiosInstance;
   storageInstance: StorageInstance;
-  getRequestToStore?: (request: InternalAxiosRequestConfig) => StorableAxiosRequestConfig | undefined;
+  getRequestToStore?: (
+    request: InternalAxiosRequestConfig,
+  ) => StorableAxiosRequestConfig | undefined;
   getResponsePlaceholder?: (request: InternalAxiosRequestConfig, err: AxiosError) => AxiosResponse;
   sendFromStorageFirst?: boolean;
   retryOptions?: OperationOptions;
 };
 
-type AxiosOfflineAdapter = ((config: InternalAxiosRequestConfig, fromStorage: boolean) => AxiosPromise) & AxiosAdapter;
+type AxiosOfflineAdapter = ((
+  config: InternalAxiosRequestConfig,
+  fromStorage: boolean,
+) => AxiosPromise) &
+  AxiosAdapter;
 
 export class AxiosOffline {
   private readonly axiosInstance: AxiosInstance;
@@ -83,14 +89,17 @@ export class AxiosOffline {
 
   private async storeRequest(request: StorableAxiosRequestConfig) {
     const num = (await this.storageInstance.keys()).length;
-    await this.storageInstance.setItem(`${this.storageInstance.prefix}_${num}_${uuid()}`, JSON.stringify(request));
+    await this.storageInstance.setItem(
+      `${this.storageInstance.prefix}_${num}_${uuid()}`,
+      JSON.stringify(request),
+    );
   }
 
   private removeRequest(key: string) {
     return this.storageInstance.removeItem(key);
   }
 
-  private adapter: AxiosOfflineAdapter = async (request) => {
+  private adapter: AxiosOfflineAdapter = async request => {
     const fromStorage = Boolean(request.headers[AxiosOffline.STORAGE_HEADER] || false);
 
     try {
@@ -117,12 +126,12 @@ export class AxiosOffline {
 
   async sendRequestsFromStore() {
     const keys = (await this.storageInstance.keys())
-      .filter((key) => key.startsWith(this.storageInstance.prefix))
+      .filter(key => key.startsWith(this.storageInstance.prefix))
       .sort();
 
     const requests: Record<string, AxiosRequestConfig> = {};
     await Promise.all(
-      keys.map(async (key) => {
+      keys.map(async key => {
         const request = await this.storageInstance.getItem(key);
         if (request) {
           requests[key] = JSON.parse(request) as AxiosRequestConfig;
@@ -163,7 +172,10 @@ export class AxiosOffline {
 
   static checkIfOfflineError(error: AxiosError): boolean {
     const { code, response } = error;
-    return response === undefined && (code === AxiosError.ERR_NETWORK || code === AxiosError.ECONNABORTED);
+    return (
+      response === undefined &&
+      (code === AxiosError.ERR_NETWORK || code === AxiosError.ECONNABORTED)
+    );
   }
 
   static STORAGE_HEADER = 'x-from-storage';
