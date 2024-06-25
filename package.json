@@ -35,6 +35,8 @@
     "@rollup/plugin-json": "^6.0.0",
     "@rollup/plugin-node-resolve": "^15.0.1",
     "@rollup/plugin-terser": "^0.4.0",
+    "@types/retry": "^0.12.5",
+    "@types/uuid": "^10.0.0",
     "axios": "1.7.2",
     "babel-preset-env": "^1.7.0",
     "prettier": "^2.8.3",
@@ -59,7 +61,7 @@
     ]
   },
   "dependencies": {
-    "@types/uuid": "^9.0.8",
+    "retry": "^0.13.1",
     "uuid": "^10.0.0"
   }
 }
