@@ -139,10 +139,8 @@ export class AxiosOffline {
       }),
     );
 
-    await Promise.all(
-      Object.entries(requests).map(async ([key, request]) => {
-        await this.sendRequest(key, request);
-      }),
+    return await Promise.allSettled(
+      Object.entries(requests).map(([key, request]) => this.sendRequest(key, request))
     );
   }
 
@@ -161,9 +159,10 @@ export class AxiosOffline {
           });
           await this.removeRequest(key);
           resolve(response);
-        } catch (e: unknown) {
+        } catch (e: unknown | Error | AxiosError) {
           if (!fn.retry(e as Error)) {
-            reject(e as Error);
+            await this.removeRequest(key);
+            reject(e);
           }
         }
       });
