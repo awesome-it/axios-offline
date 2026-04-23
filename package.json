@@ -1,5 +1,5 @@
 {
-  "name": "@awesome-it/axios-offline",
+  "name": "@awesome/axios-offline",
   "version": "1.4.0",
   "description": "Store query and repeat",
   "repository": "github.com:awesome-it/axios-offline.git",
