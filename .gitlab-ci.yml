@@ -3,9 +3,11 @@ variables:
   SKIP_MAIN_BUILD: 1
   SKIP_BRANCH_BUILD: 1
 
-  FRONTEND_PACKAGE_MANAGER: yarn
+  FRONTEND_PACKAGE_MANAGER: npm
   FRONTEND_BUILD_IMAGE: registry.awesome-it.de/upstream-dockerhub/library/node:20-alpine
   FRONTEND_PACKAGE_PUBLISH: 1
+  FRONTEND_PACKAGE_SCOPE: "@awesome-it"
+  FRONTEND_PACKAGE_REGISTRY_URL: https://www.npmjs.com/package/@awesome-it/axios-offline
 
 include:
   - project: awesome/cicd

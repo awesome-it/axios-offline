@@ -1,5 +1,5 @@
 {
-  "name": "@awesome/axios-offline",
+  "name": "@awesome-it/axios-offline",
   "version": "1.4.0",
   "description": "Store query and repeat",
   "repository": "github.com:awesome-it/axios-offline.git",
@@ -53,7 +53,7 @@
     "prepublishOnly": "npm run build",
     "preversion": "npm run build",
     "postversion": "git push && git push --tags",
-    "lint": "echo \"Not yet implemented ...\"",
+    "lint": "return 0",
     "checkTs": "tsc --noEmit",
     "test": "echo \"Not yet implemented ...\""
   },
