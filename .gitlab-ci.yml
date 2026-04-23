@@ -7,7 +7,7 @@ variables:
   FRONTEND_BUILD_IMAGE: registry.awesome-it.de/upstream-dockerhub/library/node:20-alpine
   FRONTEND_PACKAGE_PUBLISH: 1
   FRONTEND_PACKAGE_SCOPE: "@awesome-it"
-  FRONTEND_PACKAGE_REGISTRY_URL: https://www.npmjs.com/package/@awesome-it/axios-offline
+  FRONTEND_PACKAGE_REGISTRY_URL: https://registry.npmjs.org
 
 include:
   - project: awesome/cicd
