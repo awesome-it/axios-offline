@@ -39,6 +39,8 @@
     "@types/uuid": "^11.0.0",
     "axios": "^1.15.2",
     "babel-preset-env": "^0.0.0",
+    "eslint": "^10.2.1",
+    "globals": "^17.5.0",
     "prettier": "^2.8.3",
     "rollup": "^4.59.0",
     "rollup-plugin-copy": "^3.5.0",
@@ -53,7 +55,7 @@
     "prepublishOnly": "npm run build",
     "preversion": "npm run build",
     "postversion": "git push && git push --tags",
-    "lint": "return 0",
+    "lint": "eslint",
     "checkTs": "tsc --noEmit",
     "test": "echo \"Not yet implemented ...\""
   },
