@@ -52,7 +52,10 @@
     "prettier": "prettier --write src/**/*",
     "prepublishOnly": "npm run build",
     "preversion": "npm run build",
-    "postversion": "git push && git push --tags"
+    "postversion": "git push && git push --tags",
+    "lint": "echo \"Not yet implemented ...\"",
+    "checkTs": "tsc --noEmit",
+    "test": "echo \"Not yet implemented ...\""
   },
   "babel": {
     "presets": [
