@@ -1,15 +1,10 @@
 variables:
 
-  # Tag builds: Deployment to test and production.
-  # MR builds: Deployment to dev.
   SKIP_MAIN_BUILD: 1
   SKIP_BRANCH_BUILD: 1
 
-  # Use either "npm" or "yarn" depending on your choice
-  FRONTEND_PACKAGE_MANAGER: npm
-  # Optional: You can specify a node version if required
+  FRONTEND_PACKAGE_MANAGER: yarn
   FRONTEND_BUILD_IMAGE: registry.awesome-it.de/upstream-dockerhub/library/node:20-alpine
-  # Set "1" to publish the packges in our private registry
   FRONTEND_PACKAGE_PUBLISH: 1
 
 include:
