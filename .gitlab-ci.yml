@@ -9,7 +9,7 @@ variables:
   FRONTEND_PACKAGE_PUBLISH_NPMJS: 1
   FRONTEND_PACKAGE_SCOPE: "@awesome-it"
   FRONTEND_PACKAGE_REGISTRY_URL: https://registry.npmjs.org
-  FRONTEND_PACKAGE_NPM_TOKEN: ${NPM_TOKEN}
+  FRONTEND_PACKAGE_NPM_TOKEN: $NPM_TOKEN
 
 include:
   - project: awesome/cicd
